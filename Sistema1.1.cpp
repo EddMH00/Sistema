@@ -70,14 +70,15 @@ int main() {
     srand(time(0)); // Sembrar la semilla del generador de números aleatorios
 
     do {
-        cout << "1. Recursos Humanos \n2. Produccion \n3. Finanzas \n4. Marketing \n5. Sistemas \n6. Salir\n" << endl;
-        cout<<"Opcion: ";
+        cout << "1. Recursos Humanos \n2. Produccion \n3. Finanzas \n4. Marketing \n5. Sistemas \n6. Salir" << endl;
+        cout<<"Seleccione una opcion: ";
         cin >> op;
 
         switch (op) {
             case 1:
                 do {
-                    cout << "1. Ingresar usuario \n2. Mostrar Tabla \n3. Salir" << endl;
+                    cout << "\n1. Ingresar usuario \n2. Mostrar Tabla \n3. Salir" << endl;
+                    cout<<"Seleccione una opcion: ";
                     cin >> op1;
                     cin.ignore(); // Limpiar el buffer del teclado
 
