@@ -1,10 +1,10 @@
-#include<iostream>
-#include<cstdlib>
-#include<ctime>
-#include<string>
+#include <iostream>
+#include <string>
+#include <ctime>
 #include <iomanip>
+
 using namespace std;
-//Esctructura de Datos de Usuario
+
 struct Empleados {
     string Nombre;
     string ApellidoPaterno;
@@ -16,22 +16,21 @@ struct Empleados {
     string RFC;
     string Departamento;
 };
-//Crear numero Matricula de forma aleatoria
+
 void GenerarMatricula(Empleados &empleados) {
-    srand(time(0));
-    empleados.Matricula = to_string(rand() % 10000);//crea un numero aleatorio entre 0 y 100000 y Se almacena en un arreglo
+    empleados.Matricula = to_string(rand() % 100000);
 }
-//Crear RFC
+
 void GenerarRFC(Empleados &empleados) {
-    empleados.RFC = "";//Asegurar que la cadena esta vacia
+    empleados.RFC = "";
     empleados.RFC += empleados.ApellidoPaterno.substr(0, 2);
     empleados.RFC += empleados.ApellidoMaterno.substr(0, 2);
     empleados.RFC += empleados.Nombre.substr(0, 2);
     empleados.RFC += empleados.FechaNacimiento.substr(0, 2);
     empleados.RFC += empleados.FechaNacimiento.substr(3, 2);
-    empleados.RFC += empleados.FechaNacimiento.substr(6, 2);
+    empleados.RFC += empleados.FechaNacimiento.substr(8, 2);
 }
-//Dias Trabajdos
+
 void CalcularDiasTrabajados(Empleados empleados[], int numEmpleados) {
     time_t now = time(0);
     tm* fechaActual = localtime(&now);
@@ -43,15 +42,15 @@ void CalcularDiasTrabajados(Empleados empleados[], int numEmpleados) {
         int diaIngreso = stoi(empleados[i].FechaIngreso.substr(0, 2));
         int mesIngreso = stoi(empleados[i].FechaIngreso.substr(3, 2));
         int anioIngreso = stoi(empleados[i].FechaIngreso.substr(6, 4));
-        int diasTrabajados = 0;
-        diasTrabajados = (anioActual - anioIngreso) * 365 + (mesActual - mesIngreso) * 30 + (diaActual - diaIngreso);
+
+        int diasTrabajados = (anioActual - anioIngreso) * 365 + (mesActual - mesIngreso) * 30 + (diaActual - diaIngreso);
         empleados[i].DiasTrabajados = diasTrabajados;
     }
 }
-//imprimir Tabla
+
 void ImprimirTabla(Empleados empleados[], int numEmpleados) {
     cout << setw(10) << "Matricula" << setw(20) << "Nombre"
-         << setw(20) << "Apellido Paterno" << setw(20) << "Apellido Materno" 
+         << setw(20) << "Apellido Paterno" << setw(20) << "Apellido Materno"
          << setw(15) << "RFC" << setw(20) << "Dias Trabajados" << setw(20) << "Departamento" << endl;
 
     for (int i = 0; i < numEmpleados; ++i) {
@@ -66,20 +65,23 @@ int main() {
     Empleados empleado[MAX_EMPLEADOS];
     int numEmpleados = 0;
     int op, op1;
+    char Respuesta = 'S';
+
+    srand(time(0)); // Sembrar la semilla del generador de números aleatorios
 
     do {
-        cout << "1. Recursos Humanos \n2. Produccion \n3. Finanzas \n4. Salir" << endl;
+        cout << "1. Recursos Humanos \n2. Produccion \n3. Finanzas \n4. Marketing \n5. Sistemas \n6. Salir" << endl;
         cin >> op;
 
         switch (op) {
             case 1:
                 do {
                     cout << "1. Ingresar usuario \n2. Mostrar Tabla \n3. Salir" << endl;
-                    cin >> op1; fflush(stdin);
+                    cin >> op1;
+                    cin.ignore(); // Limpiar el buffer del teclado
+
                     switch (op1) {
                         case 1:
-                            char Respuesta = 'S';
-                            fflush(stdin); // Limpiar el buffer del teclado
                             while (Respuesta == 's' || Respuesta == 'S') {
                                 cout << "Ingrese el nombre del empleado: ";
                                 getline(cin, empleado[numEmpleados].Nombre);
@@ -98,11 +100,11 @@ int main() {
                                 numEmpleados++;
                                 cout << "¿Desea ingresar otro empleado? (S/N): ";
                                 cin >> Respuesta;
-                                fflush(stdin); // Limpiar el buffer del teclado
+                                cin.ignore(); // Limpiar el buffer del teclado
                             }
                             break;
                         case 2:
-                            ImprimirTabla(empleado[], numEmpleados);
+                            ImprimirTabla(empleado, numEmpleados);
                             break;
                         case 3:
                             cout << "Saliendo del sistema." << endl;
@@ -120,13 +122,14 @@ int main() {
                 cout << "Opción para Finanzas." << endl;
                 break;
             case 4:
-                cout << "Opcion para Marketing" << endl;
+                cout << "Opción para Marketing." << endl;
                 break;
             case 5:
-            	cout<<"Opcion para Sistemas" <<endl;
-            	break;
+                cout << "Opción para Sistemas." << endl;
+                break;
             case 6:
-            	cout << "Salir" << endl;
+                cout << "Salir" << endl;
+                break;
             default:
                 cout << "Error: Opción no válida." << endl;
         }
