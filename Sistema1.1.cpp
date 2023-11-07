@@ -2,7 +2,9 @@
 #include<cstdlib>
 #include<ctime>
 #include<string>
+
 using namespace std;
+
 //structura de datos de empleado
 struct Empleados{
 	string Nombre;
@@ -15,11 +17,13 @@ struct Empleados{
 	string RFC;
 	string Departamento;
 };
+
 //Generar Matricula
 void GenerarMatricula(Empleados &empleados){
 	srand(time(0));
 	empleados.Matricula = to_string(rand() % 10000 + 10000);
 }
+
 //Generar RFC
 void GenerarRFC(Empleados &empleados){
 	empleados.RFC = "";
@@ -30,6 +34,7 @@ void GenerarRFC(Empleados &empleados){
 	empleados.RFC = empleados.RFC + empleados.FechaNacimiento.substr(3,2);
 	empleados.RFC = empleados.RFC + empleados.FechaNacimiento.substr(6,2);
 }
+
 void CalcularDiasTrabajados(Empleados empleados[], int numEmpleados) {
     time_t now = time(0);
     tm* fechaActual = localtime(&now);
@@ -46,6 +51,7 @@ void CalcularDiasTrabajados(Empleados empleados[], int numEmpleados) {
         empleados[i].DiasTrabajados = diasTrabajados;
     }
 }
+
 int main(){
 	const int MAX_EMPLEADOS = 100;
 	Empleados empleado[MAX_EMPLEADOS];
