@@ -15,8 +15,6 @@ struct Empleados{
 	string Matricula;
 	string RFC;
 	string Departamento;
-};
-struct UMA {
 	float PDO;
 	float SDI;
 	float CuotaFija;
@@ -30,7 +28,9 @@ struct UMA {
 	float GPS;
 	float Patron;
 	float Obrero;
-	float Toatl;
+	float Total;
+	int clase;
+	float DiasAguinaldo;
 };
 struct Finanzas_Proveedor {
 	int num_Proveedor;
@@ -53,7 +53,6 @@ void Finanzas();
 void Finanzas_proveedores(vector<Finanzas_Proveedor>& listaProveedores);
 void Finanzas_clientes(vector<Finanzas_Cliente>& listaClientes);
 void Finanzas_imprimir_tabla(const vector<Finanzas_Proveedor>& proveedores, const vector<Finanzas_Cliente>& clientes);
-void DatosUMA(Empleados empleados[], UMA uma[], int numEmpleados);
 int main() {
 	const int MAX_EMPLEADOS = 100;
 	Empleados empleado[MAX_EMPLEADOS];
@@ -117,20 +116,7 @@ int main() {
 	return 0;
 }
 // Resto de las funciones
-void DatosUMA(Empleados empleados[], UMA uma[], int numEmpleados){
-	int claseTrabajador;
-	int DiasAnio = 365, DiasMes = 30, DiasAguinaldo;
-	float PDpat=0.007, PDobr = 0.0025, GPMpat = 0.0105, GPMobr = 0.0035, IVpat = 0.0175;
-	float IVobr = 0.00625;
-	for (int i=0; i<numEmpleados; i++){
-		cout<<"empleado: "<<empleados[i].Matricula<<empleados[i].Nombre<<endl;
-		cout<<"ingresa la clase del trabajador"<<endl;
-		cin>>claseTrabajdor;
-		if(claseTrabajdor == 1){
-			
-		}
-	}
-}
+
 void Pedir_Datos(Empleados empleados[], int numEmpleados) {
 	cout << "Ingrese el nombre del empleado: ";
 	getline(cin, empleados[numEmpleados].Nombre);
