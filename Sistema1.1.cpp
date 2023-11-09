@@ -7,6 +7,7 @@
 using namespace std;
 //area de Estructuras
 struct Empleados {
+	string huevos;
 	string Nombre;
 	string ApellidoPaterno;
 	string ApellidoMaterno;
