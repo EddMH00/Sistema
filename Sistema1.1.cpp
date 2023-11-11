@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <vector>
 #include <cstdlib>
-#include <algorithm> // Se añade la librería para utilizar std::sort(duda)
+#include <algorithm>
 using namespace std;
 
 // Área de Estructuras
@@ -115,6 +115,7 @@ int main() {
                             ImprimirTablaEmpleados(empleado, numEmpleados);
                             break;
                         case 3:
+                            CalcularUMA(empleado, numEmpleados);
                             ImprimirTablaUMA(empleado, numEmpleados);
                             break;
                         case 4:
@@ -241,8 +242,6 @@ void CalcularUMA(Empleados empleados[], int numEmpleados) {
     float PDpat = 0.007, PDobr = 0.0025, GPMpat = 0.0105, GPMobr = 0.0035, IVpat = 0.0175, IVobr = 0.00625, GPS = 0.01;
 
     for (int i = 0; i < numEmpleados; i++) {
-        cout << "Empleado: " << empleados[i].Matricula << " " << empleados[i].Nombre << " " << empleados[i].ApellidoPaterno << endl;
-
         if (empleados[i].DiasTrabajados < 365) {
             empleados[i].DiasAguinaldo = (DiasAnio / 15) * empleados[i].DiasTrabajados;
             empleados[i].FI = (DiasAnio + empleados[i].DiasAguinaldo + PDO) / DiasAnio;
@@ -384,8 +383,8 @@ void IngresarProveedores(vector<Finanzas_Proveedor>& listaProveedores) {
     for (int i = 0; i < numProveedores; ++i) {
         Finanzas_Proveedor proveedor;
         cout << "Proveedor #" << i + 1 << ":" << endl;
-        cout << "Número de proveedor: ";
-        cin >> proveedor.num_Proveedor;
+        proveedor.num_Proveedor = rand() % 90000 + 10000;
+        cout << "Número de proveedor: " << proveedor.num_Proveedor << endl;
         cout << "Nombre: ";
         cin >> proveedor.nombre;
         cout << "Teléfono: ";
@@ -405,8 +404,8 @@ void IngresarClientes(vector<Finanzas_Cliente>& listaClientes) {
     for (int i = 0; i < numClientes; ++i) {
         Finanzas_Cliente cliente;
         cout << "Cliente #" << i + 1 << ":" << endl;
-        cout << "Número de cliente: ";
-        cin >> cliente.num_Cliente;
+        cliente.num_Cliente = rand() % 90000 + 10000;
+        cout << "Número de Cliente: " << cliente.num_Cliente << endl;
         cout << "Nombre: ";
         cin >> cliente.nombre;
         cout << "Teléfono: ";
