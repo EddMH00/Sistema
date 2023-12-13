@@ -3,7 +3,7 @@ import datetime
 from typing import List
 
 import mysql.connector
-global connection 
+
 class Empleado:
     def __init__(self):
         self.Nombre = ""
@@ -105,6 +105,13 @@ def imprimir_tabla_empleados(empleados):
     for empleado in empleados:
         print(f"{empleado.Matricula:<10}{empleado.Nombre:<20}{empleado.ApellidoPaterno:<20}{empleado.ApellidoMaterno:<20}"
               f"{empleado.RFC:<15}{empleado.DiasTrabajados:<20}{empleado.Departamento:<20}")
+    
+    # Conectar a MySQL
+    connection = conectar_mysql()
+    # Extraer datos de empleados de MySQL y mostrarlos
+    mostrar_datos_desde_mysql(connection)
+    # Cerrar conexión a MySQL
+    cerrar_conexion_mysql(connection)
 
 def calcular_uma(empleados):
     dias_anio = 365
@@ -304,9 +311,9 @@ def conectar_mysql():
     # Modifica estos valores según la configuración de tu base de datos
     config = {
         'user': 'root',
-        'password': 'Mollejas2<',
+        'password': 'zqw7@r5u&#uZu',
         'host': 'localhost',
-        'database': 'proyecto',
+        'database': 'prueba_uno',
         'raise_on_warnings': True
     }
 
@@ -345,43 +352,65 @@ def exportar_empleados_a_mysql(empleados, connection):
     cursor.close()
 
     print("Datos de empleados exportados a MySQL correctamente.")
-    
-def ver_tabla_mysql(connection):
+
+#Extraer datos
+def mostrar_datos_desde_mysql(connection):
     if not connection:
         print("Error: No se pudo conectar a MySQL.")
         return
 
     cursor = connection.cursor()
 
-    # Realiza una consulta SELECT para obtener todos los registros de la tabla 'empleados'
+    # Consulta para obtener todos los empleados desde la base de datos
     sql = "SELECT * FROM empleados"
-
     cursor.execute(sql)
 
-    # Obtén todos los resultados
-    resultados = cursor.fetchall()
-
-    # Convertir los resultados de MySQL a objetos Empleado
-    empleados_mysql = []
-    for fila in resultados:
-        empleado = Empleado()
-        empleado.Matricula = fila[0]
-        empleado.Nombre = fila[1]
-        empleado.ApellidoPaterno = fila[2]
-        empleado.ApellidoMaterno = fila[3]
-        empleado.FechaNacimiento = fila[4]
-        empleado.FechaIngreso = fila[5]
-        empleado.DiasTrabajados = fila[6]
-        empleado.RFC = fila[7]
-        empleado.Departamento = fila[8]
-        empleado.Clase = fila[9]
-        empleado.SDI = fila[10]
-        empleados_mysql.append(empleado)
+    # Mostrar la información obtenida
+    print("\nDatos de empleados extraídos desde MySQL:")
+    for row in cursor.fetchall():
+        print(row)
 
     cursor.close()
 
-    # Imprimir la tabla de empleados (incluyendo los de MySQL)
-    
+#Exporta datos en materiales de mysql
+def exportar_materiales_a_mysql(materiales, connection):
+    if not connection:
+        print("Error: No se pudo conectar a MySQL.")
+        return
+
+    cursor = connection.cursor()
+
+    for material in materiales:
+        sql = """INSERT INTO materiales (Nombre, costoPieza, NumPieza, costoTotal)
+                 VALUES (%s, %s, %s, %s)"""
+
+        data = (material.Nombre, material.costoPieza, material.NumPieza, material.costoTotal)
+
+        cursor.execute(sql, data)
+
+    connection.commit()
+    cursor.close()
+
+    print("Datos de materiales exportados a MySQL correctamente.")
+
+def mostrar_datos_materiales_desde_mysql(connection):
+    if not connection:
+        print("Error: No se pudo conectar a MySQL.")
+        return
+
+    cursor = connection.cursor()
+
+    # Consulta para obtener todos los materiales desde la base de datos
+    sql = "SELECT * FROM materiales"
+    cursor.execute(sql)
+
+    # Mostrar la información obtenida
+    print("\nDatos de materiales extraídos desde MySQL:")
+    for row in cursor.fetchall():
+        print(row)
+
+    cursor.close()
+
 
 #Codigo principal
 def main():
@@ -394,7 +423,7 @@ def main():
 
     menu_principal = 0
 
-    while menu_principal !=7:
+    while menu_principal != 7:
         print("\nMenú Principal\n1. Departamento de Recursos Humanos\n2. Departamento de Finanzas"
               "\n3. Departamento de Producción\n4. Departamento de Compras\n5. Departamento de Ventas"
               "\n6. Departamento de Sistemas\n7. Salir")
@@ -405,15 +434,11 @@ def main():
             print("\nDepartamento de Recursos Humanos")
             op_rrhh = 0
 
-            while op_rrhh != 6:
+            while op_rrhh != 5:
                 print("\n1.- Ingresar empleado\n2.- Calcular días trabajados\n"
-                      "3.- Imprimir tabla de empleados\n4.- Calcular UMA\n5.- Tabla de MySQL\n6.- Salir")
-                try: 
-                    op_rrhh = int(input("Seleccione una opción: "))
-                except ValueError:
-                    print("Error: Ingrese un número válido.")
-                    continue
-                
+                      "3.- Imprimir tabla de empleados\n4.- Calcular UMA\n5.- Salir")
+                op_rrhh = int(input("Seleccione una opción: "))
+
                 if op_rrhh == 1:
                     # Ingresar empleado
                     pedir_datos_empleado(empleados, len(empleados))
@@ -430,9 +455,14 @@ def main():
                     calcular_uma(empleados)
                     imprimir_tabla_uma(empleados)
                 elif op_rrhh == 5:
-                    ver_tabla_mysql()
-                elif op_rrhh == 6:
                     print("Saliendo del Departamento de Recursos Humanos.")
+                    # Conectar a MySQL
+                    connection = conectar_mysql()
+                    # Exportar datos de empleados a MySQL
+                    exportar_empleados_a_mysql(empleados, connection)
+                    # Cerrar conexión a MySQL
+                    cerrar_conexion_mysql(connection)
+
                 else:
                     print("Error: Opción no válida.")
         elif menu_principal == 2:
@@ -465,8 +495,18 @@ def main():
                 elif op_finanzas == 3:
                     # Imprimir tabla de materiales
                     imprimir_tabla(materiales)
+                    # Conectar a MySQL
+                    connection = conectar_mysql()
+                    mostrar_datos_materiales_desde_mysql(connection)
+                    # Cerrar conexión a MySQL
+                    cerrar_conexion_mysql(connection)
                 elif op_finanzas == 4:
                     print("Saliendo del Departamento de Finanzas.")
+                    # Conectar a MySQL
+                    connection = conectar_mysql()
+                    exportar_materiales_a_mysql(materiales, connection)
+                    # Cerrar conexión a MySQL
+                    cerrar_conexion_mysql(connection)
                 else:
                     print("Error: Opción no válida.")
         elif menu_principal == 3:
@@ -489,19 +529,6 @@ def main():
             print("Saliendo del sistema.")
         else:
             print("Error: Opción no válida.")
-    
-    # Conectar a MySQL
-    #global connection 
-    connection = conectar_mysql()
-
-        # Exportar datos de empleados a MySQL
-    exportar_empleados_a_mysql(empleados, connection)
-
-        # Ver la tabla en MySQL
-    ver_tabla_mysql(connection)
-        
-        # Cerrar conexión a MySQL
-    cerrar_conexion_mysql(connection)
 
 if __name__ == "__main__":
     main()
