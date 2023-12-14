@@ -56,11 +56,18 @@ class Venta:
     def __init__(self):
         self.Producto = ""
         self.Monto = 0.0
+        self.FechaVenta = ""
 
 class Usuario:
     def __init__(self):
         self.nombre = ""
         self.rol = ""
+
+class Produccion:
+    def __init__(self):
+        self.Producto = ""
+        self.Cantidad = 0
+        self.FechaProduccion = ""
 
 def pedir_datos_empleado(empleados, num_empleados):
     empleado = Empleado()
@@ -245,6 +252,13 @@ def imprimir_tabla_finanzas(proveedores, clientes):
     for cliente in clientes:
         print(f"{cliente.num_Cliente:<20}{cliente.nombre:<20}{cliente.telefono:<20}")
 
+def pedir_datos_venta(ventas, num_ventas):
+    venta = Venta()
+    venta.Producto = input("Ingrese el nombre del producto: ")
+    venta.Monto = float(input("Ingrese el monto de la venta: "))
+    venta.FechaVenta = input("Ingrese la fecha de la venta (AAAA-MM-DD): ")
+    ventas.append(venta)
+
 def marketing(min_ventas, max_ventas, ventas):
     menu_marketing = 0
 
@@ -255,11 +269,7 @@ def marketing(min_ventas, max_ventas, ventas):
         if menu_marketing == 1:
             # Registrar venta
             if len(ventas) < max_ventas:
-                nueva_venta = Venta()
-                nueva_venta.Producto = input("Ingrese el nombre del producto: ")
-                nueva_venta.Monto = float(input("Ingrese el monto de la venta: "))
-
-                ventas.append(nueva_venta)
+                pedir_datos_venta(ventas, len(ventas))
                 print("Venta registrada exitosamente.")
             else:
                 print("Se alcanzó el número máximo de ventas permitidas.")
@@ -268,13 +278,26 @@ def marketing(min_ventas, max_ventas, ventas):
             if len(ventas) >= min_ventas:
                 print("\nVentas registradas:")
                 for venta in ventas:
-                    print(f"Producto: {venta.Producto}, Monto: {venta.Monto}")
+                    print(f"Producto: {venta.Producto}, Monto: {venta.Monto}, Fecha: {venta.FechaVenta}")
             else:
                 print(f"Se requiere un mínimo de {min_ventas} ventas para mostrar el historial.")
         elif menu_marketing == 3:
             print("Saliendo del departamento de Marketing.")
+            # Conectar a MySQL
+            connection = conectar_mysql()
+            # Exportar datos de ventas a MySQL
+            exportar_ventas_a_mysql(ventas, connection)
+            # Cerrar conexión a MySQL
+            cerrar_conexion_mysql(connection)
         else:
             print("Error: Opción no válida.")
+
+
+def pedir_datos_usuario(usuarios, num_usuarios):
+    usuario = Usuario()
+    usuario.nombre = input("Ingrese el nombre del usuario: ")
+    usuario.rol = input("Ingrese el rol del usuario: ")
+    usuarios.append(usuario)
 
 def area_sistemas(lista_usuarios):
     op_sistemas = 0
@@ -287,10 +310,7 @@ def area_sistemas(lista_usuarios):
             # Ingresar usuarios
             num_usuarios = int(input("Ingrese el número de usuarios a registrar: "))
             for _ in range(num_usuarios):
-                usuario = Usuario()
-                usuario.nombre = input("Ingrese el nombre del usuario: ")
-                usuario.rol = input("Ingrese el rol del usuario: ")
-                lista_usuarios.append(usuario)
+                pedir_datos_usuario(lista_usuarios, len(lista_usuarios))
 
             print("Usuarios registrados exitosamente.")
         elif op_sistemas == 2:
@@ -303,8 +323,22 @@ def area_sistemas(lista_usuarios):
                 print("No hay usuarios registrados.")
         elif op_sistemas == 3:
             print("Saliendo del departamento de Sistemas.")
+            # Conectar a MySQL
+            connection = conectar_mysql()
+            # Exportar datos de usuarios a MySQL
+            exportar_usuarios_a_mysql(lista_usuarios, connection)
+            # Cerrar conexión a MySQL
+            cerrar_conexion_mysql(connection)
         else:
             print("Error: Opción no válida.")
+
+
+def pedir_datos_produccion(produccion, num_producciones):
+    produccion_item = Produccion()
+    produccion_item.Producto = input("Ingrese el nombre del producto: ")
+    produccion_item.Cantidad = int(input("Ingrese la cantidad producida: "))
+    produccion_item.FechaProduccion = input("Ingrese la fecha de producción (AAAA-MM-DD): ")
+    produccion.append(produccion_item)
 
 #conectar a mysql
 def conectar_mysql():
@@ -411,6 +445,123 @@ def mostrar_datos_materiales_desde_mysql(connection):
 
     cursor.close()
 
+#Mysql produccion
+def exportar_produccion_a_mysql(produccion, connection):
+    if not connection:
+        print("Error: No se pudo conectar a MySQL.")
+        return
+
+    cursor = connection.cursor()
+
+    for item in produccion:
+        sql = """INSERT INTO produccion (Producto, Cantidad, FechaProduccion)
+                 VALUES (%s, %s, %s)"""
+
+        data = (item.Producto, item.Cantidad, item.FechaProduccion)
+
+        cursor.execute(sql, data)
+
+    connection.commit()
+    cursor.close()
+
+    print("Datos de producción exportados a MySQL correctamente.")
+
+def mostrar_datos_produccion_desde_mysql(connection):
+    if not connection:
+        print("Error: No se pudo conectar a MySQL.")
+        return
+
+    cursor = connection.cursor()
+
+    # Consulta para obtener todos los registros de producción desde la base de datos
+    sql = "SELECT * FROM produccion"
+    cursor.execute(sql)
+
+    # Mostrar la información obtenida
+    print("\nDatos de producción extraídos desde MySQL:")
+    for row in cursor.fetchall():
+        print(row)
+
+    cursor.close()
+
+#Mysql marketing
+def exportar_ventas_a_mysql(ventas, connection):
+    if not connection:
+        print("Error: No se pudo conectar a MySQL.")
+        return
+
+    cursor = connection.cursor()
+
+    for venta in ventas:
+        sql = """INSERT INTO marketing (Producto, Monto, FechaVenta)
+                 VALUES (%s, %s, %s)"""
+
+        data = (venta.Producto, venta.Monto, venta.FechaVenta)
+
+        cursor.execute(sql, data)
+
+    connection.commit()
+    cursor.close()
+
+    print("Datos de ventas exportados a MySQL correctamente.")
+
+def mostrar_datos_ventas_desde_mysql(connection):
+    if not connection:
+        print("Error: No se pudo conectar a MySQL.")
+        return
+
+    cursor = connection.cursor()
+
+    # Consulta para obtener todos los registros de ventas desde la base de datos
+    sql = "SELECT * FROM marketing"
+    cursor.execute(sql)
+
+    # Mostrar la información obtenida
+    print("\nDatos de ventas extraídos desde MySQL:")
+    for row in cursor.fetchall():
+        print(row)
+
+    cursor.close()
+
+#Mysql sistemas
+def exportar_usuarios_a_mysql(usuarios, connection):
+    if not connection:
+        print("Error: No se pudo conectar a MySQL.")
+        return
+
+    cursor = connection.cursor()
+
+    for usuario in usuarios:
+        sql = """INSERT INTO usuarios (Nombre, Rol)
+                 VALUES (%s, %s)"""
+
+        data = (usuario.nombre, usuario.rol)
+
+        cursor.execute(sql, data)
+
+    connection.commit()
+    cursor.close()
+
+    print("Datos de usuarios exportados a MySQL correctamente.")
+
+def mostrar_datos_usuarios_desde_mysql(connection):
+    if not connection:
+        print("Error: No se pudo conectar a MySQL.")
+        return
+
+    cursor = connection.cursor()
+
+    # Consulta para obtener todos los registros de usuarios desde la base de datos
+    sql = "SELECT * FROM usuarios"
+    cursor.execute(sql)
+
+    # Mostrar la información obtenida
+    print("\nDatos de usuarios extraídos desde MySQL:")
+    for row in cursor.fetchall():
+        print(row)
+
+    cursor.close()
+
 
 #Codigo principal
 def main():
@@ -420,13 +571,13 @@ def main():
     clientes = []
     ventas = []
     usuarios = []
+    produccion = []
 
     menu_principal = 0
 
-    while menu_principal != 7:
+    while menu_principal != 6:
         print("\nMenú Principal\n1. Departamento de Recursos Humanos\n2. Departamento de Finanzas"
-              "\n3. Departamento de Producción\n4. Departamento de Compras\n5. Departamento de Ventas"
-              "\n6. Departamento de Sistemas\n7. Salir")
+              "\n3. Departamento de Producción\n4. Departamento de Marketing\n5. Departamento de Sistemas\n6. Salir")
         menu_principal = int(input("Seleccione una opción: "))
 
         if menu_principal == 1:
@@ -512,20 +663,40 @@ def main():
         elif menu_principal == 3:
             # Departamento de Producción
             print("\nDepartamento de Producción")
-            print("Funcionalidad no implementada.")
+            op_produccion = 0
+
+            while op_produccion != 4:
+                print("\n1.- Ingresar producción\n2.- Imprimir tabla de producción\n"
+                      "3.- Salir")
+                op_produccion = int(input("Seleccione una opción: "))
+
+                if op_produccion == 1:
+                    # Ingresar producción
+                    pedir_datos_produccion(produccion, len(produccion))
+                    print("Producción registrada exitosamente.")
+                elif op_produccion == 2:
+                    # Imprimir tabla de producción
+                    # (Esto mostrará tanto los datos en memoria como los almacenados en MySQL)
+                    for item in produccion:
+                        print(f"Producto: {item.Producto}, Cantidad: {item.Cantidad}, Fecha: {item.FechaProduccion}")
+                elif op_produccion == 3:
+                    print("Saliendo del Departamento de Producción.")
+                    # Exportar producción a MySQL
+                    connection = conectar_mysql()
+                    exportar_produccion_a_mysql(produccion, connection)
+                    cerrar_conexion_mysql(connection)
+                else:
+                    print("Error: Opción no válida.")
+
         elif menu_principal == 4:
-            # Departamento de Compras
-            print("\nDepartamento de Compras")
-            print("Funcionalidad no implementada.")
-        elif menu_principal == 5:
-            # Departamento de Ventas
-            print("\nDepartamento de Ventas")
+            # Departamento de Marketing
+            print("\nDepartamento de Marketing")
             marketing(3, 10, ventas)
-        elif menu_principal == 6:
+        elif menu_principal == 5:
             # Departamento de Sistemas
             print("\nDepartamento de Sistemas")
             area_sistemas(usuarios)
-        elif menu_principal == 7:
+        elif menu_principal == 6:
             print("Saliendo del sistema.")
         else:
             print("Error: Opción no válida.")
