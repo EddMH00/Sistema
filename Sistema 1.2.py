@@ -275,12 +275,13 @@ def marketing(min_ventas, max_ventas, ventas):
                 print("Se alcanzó el número máximo de ventas permitidas.")
         elif menu_marketing == 2:
             # Mostrar ventas
-            if len(ventas) >= min_ventas:
-                print("\nVentas registradas:")
-                for venta in ventas:
-                    print(f"Producto: {venta.Producto}, Monto: {venta.Monto}, Fecha: {venta.FechaVenta}")
-            else:
-                print(f"Se requiere un mínimo de {min_ventas} ventas para mostrar el historial.")
+            print("\nVentas registradas:")
+            # Conectar a MySQL
+            connection = conectar_mysql()
+            mostrar_datos_ventas_desde_mysql(connection)
+            # Cerrar conexión a MySQL
+            cerrar_conexion_mysql(connection)
+            
         elif menu_marketing == 3:
             print("Saliendo del departamento de Marketing.")
             # Conectar a MySQL
@@ -315,12 +316,13 @@ def area_sistemas(lista_usuarios):
             print("Usuarios registrados exitosamente.")
         elif op_sistemas == 2:
             # Mostrar usuarios
-            if lista_usuarios:
-                print("\nLista de Usuarios:")
-                for usuario in lista_usuarios:
-                    print(f"Nombre: {usuario.nombre}, Rol: {usuario.rol}")
-            else:
-                print("No hay usuarios registrados.")
+            print("\nLista de Usuarios:")
+            # Conectar a MySQL
+            connection = conectar_mysql()
+            mostrar_datos_usuarios_desde_mysql(connection)
+            # Cerrar conexión a MySQL
+            cerrar_conexion_mysql(connection)
+            
         elif op_sistemas == 3:
             print("Saliendo del departamento de Sistemas.")
             # Conectar a MySQL
@@ -347,7 +349,7 @@ def conectar_mysql():
         'user': 'root',
         'password': 'zqw7@r5u&#uZu',
         'host': 'localhost',
-        'database': 'prueba_uno',
+        'database': 'prueba_dos',
         'raise_on_warnings': True
     }
 
@@ -665,7 +667,7 @@ def main():
             print("\nDepartamento de Producción")
             op_produccion = 0
 
-            while op_produccion != 4:
+            while op_produccion != 3:
                 print("\n1.- Ingresar producción\n2.- Imprimir tabla de producción\n"
                       "3.- Salir")
                 op_produccion = int(input("Seleccione una opción: "))
@@ -677,8 +679,9 @@ def main():
                 elif op_produccion == 2:
                     # Imprimir tabla de producción
                     # (Esto mostrará tanto los datos en memoria como los almacenados en MySQL)
-                    for item in produccion:
-                        print(f"Producto: {item.Producto}, Cantidad: {item.Cantidad}, Fecha: {item.FechaProduccion}")
+                    connection = conectar_mysql()
+                    mostrar_datos_produccion_desde_mysql(connection)
+                    cerrar_conexion_mysql(connection)
                 elif op_produccion == 3:
                     print("Saliendo del Departamento de Producción.")
                     # Exportar producción a MySQL
