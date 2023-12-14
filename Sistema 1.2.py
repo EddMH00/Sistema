@@ -347,7 +347,7 @@ def conectar_mysql():
     # Modifica estos valores según la configuración de tu base de datos
     config = {
         'user': 'root',
-        'password': 'zqw7@r5u&#uZu',
+        'password': 'z',
         'host': 'localhost',
         'database': 'prueba_dos',
         'raise_on_warnings': True
